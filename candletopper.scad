@@ -86,7 +86,7 @@ difference(){
 difference(){
     color("Pink")
     cylinder(
-        h=cap_wall_thickness*2 - epsilon,
+        h=cap_wall_thickness*1 - epsilon,
         r=inner_pipe_diameter/2 + pipe_wall_thickness + cap_wall_thickness
     );
     translate([0, 0, -epsilon])
