@@ -8,7 +8,7 @@ epsilon = 0.001;
 inner_pipe_diameter = 15.5;
 outer_pipe_diameter = 21.4;
 pipe_wall_thickness = 3.06;
-tube_wall_thickness = 3;
+tube_wall_thickness = 2;
 cap_wall_thickness = 2;
 funnel_height = 4;
 
@@ -24,7 +24,7 @@ sideB_clearance = 1.16;
 led_main_diameter = 5;
 led_base_diameter = 5.7;
 
-/*difference(){*/
+difference(){
 
 //color("DarkSlateGray")
 union(){
@@ -90,25 +90,28 @@ union(){
 
     // end cap
     difference(){
+        // slab
         color("Pink")
         cylinder(
             h=cap_wall_thickness*2 - epsilon,
             r=inner_pipe_diameter/2 + pipe_wall_thickness + cap_wall_thickness
         );
+        // space for the LED funnel
         translate([0, 0, -epsilon])
         cylinder(
             h=cap_wall_thickness*(2+epsilon),
             r=inner_pipe_diameter/2 - cap_wall_thickness
         );
+        // outside trough for pipe wall
         translate([0, 0, cap_wall_thickness])
         cylinder(
             h=cap_wall_thickness,
-            r=inner_pipe_diameter/2 + pipe_wall_thickness
+            r1=inner_pipe_diameter/2 + pipe_wall_thickness,
+            r2=inner_pipe_diameter/2 + pipe_wall_thickness + cap_wall_thickness/2
         );
     }
 }
 
-/*//cross section
-translate([0, 0, -epsilon])
-cube([15,15,40]);
-}*/
+//cross section
+//translate([0, 0, -epsilon]) cube([15,15,20]);
+}
