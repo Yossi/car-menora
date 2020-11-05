@@ -2,6 +2,7 @@ $fa = 1;
 $fs = 0.4;
 
 epsilon = 0.001;
+slop = 0.04;
 
 //all measurements in mm
 
@@ -12,14 +13,15 @@ tube_wall_thickness = 2;
 cap_wall_thickness = 2;
 funnel_height = 4;
 
-board_short_way = 11.4;
+board_short_way = 11.4 + slop;
 board_long_way = 22.1;
-board_thickness = 1.6;
+board_thickness = 1.6 + slop;
 
 board_clearance = 4;
 component_width = 8.43;
 sideA_clearance = 1.81;
 sideB_clearance = 1.16;
+board_offset_multiplier = .55;
 
 led_main_diameter = 5;
 led_base_diameter = 5.7;
@@ -54,14 +56,14 @@ union(){
                 cylinder(h=funnel_height + board_long_way - epsilon,
                          r=inner_pipe_diameter/2);
                 translate([0, 0, -epsilon])
-                cylinder(h=board_short_way + board_long_way + epsilon,
+                cylinder(h=funnel_height + board_long_way + epsilon,
                          r=(inner_pipe_diameter/2) - tube_wall_thickness);
             }
         }
         
         //board
         translate([
-            board_thickness*.75,
+            board_thickness * board_offset_multiplier,
             -board_short_way/2,
             funnel_height
         ])
