@@ -1,0 +1,10 @@
+from collections import namedtuple
+
+Network = namedtuple('Network', 'ssid password')
+
+networks = (
+    Network('phoneWiFi', 'password'), # phone
+    Network('homeWiFi', 'password'), # home
+    Network('workWiFi', 'password'), # work
+    # etc...
+)
