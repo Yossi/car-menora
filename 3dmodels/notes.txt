@@ -1,0 +1,1 @@
+these were designed for another project with AA battery powered led candles made of 1/2" pvc tubing, but that project sort of went nowhere. the candletopper.stl is still useful for the current iteration of the project becasue i had a bunch of them already printed and rolling around so i used what i had.
