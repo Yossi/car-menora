@@ -41,21 +41,33 @@ class Menorah(object):
                 leds[y].off()
             leds[9-x-1].on()
 
-    def party_time(self):
-        for i in range(1):            
+    def party_time(self, times=1):
+        def move(x):
+            leds[x].on()
             sleep(.1)
-            for x in range(9):
+            leds[x].off()
+
+        def wipe(x, on=False):
+            if on:
                 leds[x].on()
-                sleep(.1)
+            else:
                 leds[x].off()
             sleep(.1)
-            for x in range(8,0,-1):
-                leds[x].on()
-                sleep(.1)
-                leds[x].off()
-            leds[0].on()
-            sleep(.9)
-            self.display_lights()
+        
+        direction = [(9,), (8,0,-1)]
+
+        for x in range(*direction[1]):
+            wipe(x)
+
+        for t in range(times):
+            for x in range(*direction[t%2]):
+                move(x)                
+            
+        for x in range(*direction[(times)%2]):
+            wipe(x, on=True)
+            
+            
+        self.display_lights()
         
         #for i in range(360*2):
         #    for n, led in enumerate(leds):
@@ -63,7 +75,7 @@ class Menorah(object):
         #    sleep(0.01)
         
     def smooth_wave(self, dark=False):
-        for q in (1024+1,-1,-1), (1024+1,):
+        for q in (1024,-1,-1), (1024+1,):
             for t in range(*q):
                 for n, led in enumerate(leds):
                     x = t/1024-(2*n+9)/32

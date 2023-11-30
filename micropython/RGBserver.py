@@ -28,9 +28,9 @@ def wave(request):
 def wave(request):
     m.smooth_wave(dark=True)
     
-@app.route('lights/party')
-def wave(request):
-    m.party_time()
+@app.route('lights/party/<int:times>')
+def wave(request, times=1):
+    m.party_time(times)
 
 @app.route('lights/stack')
 def stack(request):
