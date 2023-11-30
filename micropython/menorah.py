@@ -63,14 +63,16 @@ class Menorah(object):
         #    sleep(0.01)
         
     def smooth_wave(self, dark=False):
-        for t in range(1024+1):
-            for n, led in enumerate(leds):
-                x = t/1024-(2*n+9)/32
-                if dark:
-                    led.brightness = 1-exp(-200*x*x)
-                else:
-                    led.brightness = exp(-200*x*x)
-                
+        for q in (1024+1,-1,-1), (1024+1,):
+            for t in range(*q):
+                for n, led in enumerate(leds):
+                    x = t/1024-(2*n+9)/32
+                    if dark:
+                        led.brightness = 1-exp(-200*x*x)
+                    else:
+                        led.brightness = exp(-200*x*x)
+        
+        sleep(.5)
         self.display_lights()
 
     def in_out(self):
