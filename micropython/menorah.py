@@ -73,4 +73,24 @@ class Menorah(object):
                 
         self.display_lights()
 
+    def in_out(self):
+        for led in leds:
+            led.off()
+        leds[4].on()
+        sleep(.1)
+        
+        for _ in range(3):
+            for x in range(4):
+                leds[3-x].on()
+                leds[5+x].on()
+                sleep(.1)
+            
+            for x in range(3,-1,-1):
+                leds[3-x].off()
+                leds[5+x].off()
+                sleep(.1)
+
+        self.display_lights()
+        
+        
 menorah = Menorah()

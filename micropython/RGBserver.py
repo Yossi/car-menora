@@ -36,6 +36,9 @@ def wave(request):
 def stack(request):
     m.stack()
 
+@app.route('lights/in_out')
+def in_out(request):
+    m.in_out()
 
 if __name__ == '__main__':
     app.run()
