@@ -1,3 +1,5 @@
 sometimes microdot is too big to sit in ram as a py file.
 the solution is to complie it to an mpy file.
 this is done with pip install mpy-cross, ensuring that the mpy-cross and micropython versions match.
+
+make sure you get mircropython for pi pico w. if you get teh pi pico version it will immediately complain about mip not being found.
