@@ -54,7 +54,7 @@ class Menorah(object):
                 leds[x].off()
             sleep(.1)
         
-        direction = [(9,), (8,0,-1)]
+        direction = [(9,), (8,-1,-1)]
 
         for x in range(*direction[1]):
             wipe(x)
