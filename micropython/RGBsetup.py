@@ -1,5 +1,5 @@
-import mip
 from collections import namedtuple
+import mip
 
 Package = namedtuple('Package', 'name url')
 requirements = (
