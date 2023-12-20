@@ -2,3 +2,5 @@
 tools/
 
 micropython/networks.py
+
+*.mpy
