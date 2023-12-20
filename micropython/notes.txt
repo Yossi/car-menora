@@ -2,4 +2,8 @@ sometimes microdot is too big to sit in ram as a py file.
 the solution is to complie it to an mpy file.
 this is done with pip install mpy-cross, ensuring that the mpy-cross and micropython versions match.
 
-make sure you get mircropython for pi pico w. if you get teh pi pico version it will immediately complain about mip not being found.
+make sure you get micropython for pi pico w. if you get the pi pico version it will immediately complain about mip not being found.
+this might not matter since mip would not get the precompiled libs we need anyway so this thing cant bootstrap itself regardless.
+
+
+the board as built has a bug. all the resistors are 220 but with the cheapo rgb leds the red channels should have a smaller resistor. 100 looks good. TODO: solder this up
