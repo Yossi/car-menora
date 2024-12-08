@@ -1,10 +1,13 @@
 from collections import namedtuple
 import mip
 
-Package = namedtuple('Package', 'name url')
+Package = namedtuple('Package', 'name url path')
 requirements = (
-    Package('picozero', 'github:RaspberryPiFoundation/picozero/picozero/picozero.py'),
-    Package('microdot', 'github:miguelgrinberg/microdot/src/microdot.py'),
+    Package('picozero', 'github:RaspberryPiFoundation/picozero/picozero/picozero.py', 'lib'),
+    Package('microdot', 'github:miguelgrinberg/microdot/src/microdot/microdot.py', 'lib/microdot'),
+    Package('microdot.websocket', 'github:miguelgrinberg/microdot/src/microdot/websocket.py', 'lib/microdot'),
+    Package('microdot.websocket', 'github:miguelgrinberg/microdot/src/microdot/helpers.py', 'lib/microdot'),
+    Package('microdot.websocket', 'github:miguelgrinberg/microdot/src/microdot/__init__.py', 'lib/microdot'),
 )
 
 try:
@@ -18,7 +21,7 @@ try:
             print('OK')
         except ImportError:
             print('not present')
-            mip.install(requirement.url)
+            mip.install(requirement.url, target=requirement.path)
     
     #import set_time
     #set_time.set_time()
