@@ -12,6 +12,7 @@
 </head>
 
 <body>
+
     <table border="0" id="thetable">
         <tr style="height:10px">
             <th> </th>
@@ -84,18 +85,25 @@
     <button onClick="fetch('/lights/in_out')">In Out</button><br>
     <input type="number" id="night" min="0" max="8"><button onClick="fetch('/night/' + document.getElementById('night').value)">Lights</button><br>
 
+    <div id="feedback"></div>
+
     <script>
+        const ws = new WebSocket('ws://' + window.location.host + '/ws');
+
+        // Listen for messages from the server
+        ws.onmessage = function(event) {
+            console.log(event.data);
+            document.getElementById("feedback").innerText = event.data;
+        };
+
         const btn = document.querySelector('#btnGo');
-        btn.addEventListener('click', (event) => {
+        btn.addEventListener('click', () => {
             let checkboxes = document.querySelectorAll('input[type=checkbox]');
-            let values = [];
-            checkboxes.forEach((cb) => {
-                values.push(cb.checked ? '1' : '0');
-            });
-            //alert(values.join(''));
-            console.log(values.join(''));
-            fetch('/bits/' + values.join(''))
-        });    
+            let values = Array.from(checkboxes).map(cb => (cb.checked ? '1' : '0')).join('');
+            fetch('/bits/' + values)
+                .then(response => response.text())
+                .then(text => console.log(text));
+        });
     </script>
 
 
@@ -132,6 +140,7 @@
             updateColor(row); // update the color
         }
     </script>
+
 </body>
 
 </html>

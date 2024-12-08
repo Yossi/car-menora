@@ -2,6 +2,7 @@ from picozero import LED, Button
 from math import sin, radians, cos, exp
 from time import sleep
 from machine import Timer
+import uasyncio as asyncio
 
 pins = 7,8,9,10,11,12,13,14,15
 leds = [LED(pin) for pin in pins]
@@ -31,7 +32,8 @@ class Menorah(object):
         print(self.lights)
         self.display_lights()
 
-    def stack(self):
+    async def stack(self):
+        await asyncio.sleep(0)
         for led in leds:
             led.off()
         for x in range(9):
@@ -41,7 +43,7 @@ class Menorah(object):
                 leds[y].off()
             leds[9-x-1].on()
 
-    def party_time(self, times=1):
+    async def party_time(self, times=1):
         def move(x):
             leds[x].on()
             sleep(.1)
@@ -55,6 +57,8 @@ class Menorah(object):
             sleep(.1)
         
         direction = [(9,), (8,-1,-1)]
+
+        await asyncio.sleep(0)
 
         for x in range(*direction[1]):
             wipe(x)
@@ -74,7 +78,8 @@ class Menorah(object):
         #        led.brightness = 0.51 + 0.49 * cos(radians(i-n*20))
         #    sleep(0.01)
         
-    def smooth_wave(self, dark=False):
+    async def smooth_wave(self, dark=False):
+        await asyncio.sleep(0)
         for q in (1024,-1,-1), (1024+1,):
             for t in range(*q):
                 for n, led in enumerate(leds):
@@ -83,11 +88,13 @@ class Menorah(object):
                         led.brightness = 1-exp(-200*x*x)
                     else:
                         led.brightness = exp(-200*x*x)
+                
         
         sleep(.5)
         self.display_lights()
 
-    def in_out(self):
+    async def in_out(self):
+        await asyncio.sleep(0)
         for led in leds:
             led.off()
         leds[4].on()
