@@ -66,7 +66,7 @@ async def wave(request, dark):
 async def wave(request, times=1):
     print('party')
     asyncio.create_task(broadcast("Doing party"))
-    await m.party_time(times)
+    await m.party_time(times, broadcast=broadcast)
     asyncio.create_task(broadcast("Party done"))
 
 @app.route('lights/stack')

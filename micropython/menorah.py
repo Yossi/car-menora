@@ -43,7 +43,7 @@ class Menorah(object):
                 leds[y].off()
             leds[9-x-1].on()
 
-    async def party_time(self, times=1):
+    async def party_time(self, times=1, broadcast=None):
         def move(x):
             leds[x].on()
             sleep(.1)
@@ -65,7 +65,9 @@ class Menorah(object):
 
         for t in range(times):
             for x in range(*direction[t%2]):
-                move(x)                
+                move(x)
+            if broadcast:
+                await broadcast(f"Party cycle {t + 1} of {times}")
             
         for x in range(*direction[(times)%2]):
             wipe(x, on=True)
