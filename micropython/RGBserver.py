@@ -20,15 +20,15 @@ async def websocket(request, ws):
     try:
         while True:
             message = await ws.receive()
-            print(f"WebSocket message received: {message}")
+            print(f'WebSocket message received: {message}')
             # Optionally handle messages from the client
     except Exception as e:
-        print(f"WebSocket closed: {e}")
+        print(f'WebSocket closed: {e}')
     finally:
         clients.remove(ws)
 
 async def broadcast(message):
-    """Send a message to all connected WebSocket clients."""
+    '''Send a message to all connected WebSocket clients.'''
     for client in clients:
         try:
             await client.send(message)
@@ -42,45 +42,44 @@ def index(request):
 @app.route('/night/<int:n>')
 def night(request, n):
     print(f'night {n}')
-    asyncio.create_task(broadcast(f"Changing to {n} lights"))
+    asyncio.create_task(broadcast(f'Changing to {n} lights'))
     m.night(n)
-    asyncio.create_task(broadcast(f"Showing {n} lights"))
+    asyncio.create_task(broadcast(f'Showing {n} lights'))
 
 @app.route('/bits/<bits>')
 def bits(request, bits):
     print(bits)
-    asyncio.create_task(broadcast(f"Updating colors to {bits}"))
+    asyncio.create_task(broadcast(f'Updating colors to:\n{bits}'))
     r.load(bits)
-    asyncio.create_task(broadcast(f"Colors updated to {bits}"))
+    asyncio.create_task(broadcast(f'Colors updated to:\n{bits}'))
 
 @app.route('/lights/wave/<dark>')
 async def wave(request, dark):
     dark = False if dark == 'light' else True
     print('wave')
-
-    asyncio.create_task(broadcast("Doing smooth wave"))
+    asyncio.create_task(broadcast('Running smooth wave'))
     await m.smooth_wave(dark)
-    asyncio.create_task(broadcast("Smooth wave done"))
+    asyncio.create_task(broadcast('Done smooth wave'))
 
 @app.route('lights/party/<int:times>')
 async def wave(request, times=1):
     print('party')
-    asyncio.create_task(broadcast("Doing party"))
+    asyncio.create_task(broadcast('Doing party'))
     await m.party_time(times, broadcast=broadcast)
-    asyncio.create_task(broadcast("Party done"))
+    asyncio.create_task(broadcast('Done party'))
 
 @app.route('lights/stack')
 async def stack(request):
     print('stack')
-    asyncio.create_task(broadcast("Doing stack"))
+    asyncio.create_task(broadcast('Running stack'))
     await m.stack()
-    asyncio.create_task(broadcast("Stack done"))
+    asyncio.create_task(broadcast('Done stack'))
 
 @app.route('lights/in_out')
 async def in_out(request):
-    asyncio.create_task(broadcast("Doing in out"))
+    asyncio.create_task(broadcast('Running in out'))
     await m.in_out()
-    asyncio.create_task(broadcast("In out done"))
+    asyncio.create_task(broadcast('Done in out'))
 
 if __name__ == '__main__':
     app.run()
