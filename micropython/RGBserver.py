@@ -1,9 +1,8 @@
-from shiftregister import register as r
 from microdot import Microdot, send_file
 from microdot.websocket import with_websocket
+from shiftregister import register as r
 from menorah import menorah as m
-import asyncio
-from time import sleep
+import json
 
 app = Microdot()
 
@@ -21,7 +20,31 @@ async def websocket(request, ws):
         while True:
             message = await ws.receive()
             print(f'WebSocket message received: {message}')
-            # Optionally handle messages from the client
+            data = json.loads(message)
+            command = data.get('command')
+            if command == 'go':
+                bits = data.get('bits')
+                r.load(bits)
+                await broadcast(json.dumps({'status': 'success', 'message': f'Colors updated to:\n{bits}'}))
+            elif command == 'load':
+                await ws.send(json.dumps({'status': 'success', 'bits': r.bits, 'message': 'Loaded colors'}))
+            elif command == 'waveLight':
+                await wave(request, 'light')
+            elif command == 'waveDark':
+                await wave(request, 'dark')
+            elif command == 'party':
+                times = data.get('times', 1)
+                times = int(times) if times != "" else 1
+                await party(request, times)
+            elif command == 'stack':
+                await stack(request)
+            elif command == 'inOut':
+                await in_out(request)
+            elif command == 'lights':
+                night_ = data.get('night', 8)
+                night_ = int(night_) if night_ != "" else 8
+                await night(request, night_)
+            # Optionally handle other commands
     except Exception as e:
         print(f'WebSocket closed: {e}')
     finally:
@@ -37,49 +60,56 @@ async def broadcast(message):
 
 @app.route('/')
 def index(request):
-    return send_file('html.html')
+    return send_file('index.html')
 
 @app.route('/night/<int:n>')
-def night(request, n):
+async def night(request, n):
     print(f'night {n}')
-    asyncio.create_task(broadcast(f'Changing to {n} lights'))
+    await broadcast(json.dumps({'status': 'info', 'message': f'Changing to {n} lights'}))
     m.night(n)
-    asyncio.create_task(broadcast(f'Showing {n} lights'))
+    await broadcast(json.dumps({'status': 'success', 'message': f'Showing {n} lights'}))
 
 @app.route('/bits/<bits>')
-def bits(request, bits):
+async def set_bits(request, bits):
     print(bits)
-    asyncio.create_task(broadcast(f'Updating colors to:\n{bits}'))
+    await broadcast(json.dumps({'status': 'info', 'message': f'Updating colors to:\n{bits}'}))
     r.load(bits)
-    asyncio.create_task(broadcast(f'Colors updated to:\n{bits}'))
+    await broadcast(json.dumps({'status': 'success', 'message': f'Colors updated to:\n{bits}'}))
+
+@app.route('/bits')
+def get_bits(request):
+    return r.bits
 
 @app.route('/lights/wave/<dark>')
 async def wave(request, dark):
-    dark = False if dark == 'light' else True
+    if dark != 'light':
+        dark = 'dark'
+    # dark = False if dark == 'light' else True
     print('wave')
-    asyncio.create_task(broadcast('Running smooth wave'))
+    await broadcast(json.dumps({'status': 'info', 'message': 'Running smooth wave'}))
     await m.smooth_wave(dark)
-    asyncio.create_task(broadcast('Done smooth wave'))
+    await broadcast(json.dumps({'status': 'success', 'message': 'Done smooth wave'}))
 
-@app.route('lights/party/<int:times>')
-async def wave(request, times=1):
+@app.route('/lights/party/<int:times>')
+async def party(request, times=1):
     print('party')
-    asyncio.create_task(broadcast('Doing party'))
+    await broadcast(json.dumps({'status': 'info', 'message': 'Doing party'}))
     await m.party_time(times, broadcast=broadcast)
-    asyncio.create_task(broadcast('Done party'))
+    await broadcast(json.dumps({'status': 'success', 'message': 'Done party'}))
 
-@app.route('lights/stack')
+@app.route('/lights/stack')
 async def stack(request):
     print('stack')
-    asyncio.create_task(broadcast('Running stack'))
+    await broadcast(json.dumps({'status': 'info', 'message': 'Running stack'}))
     await m.stack()
-    asyncio.create_task(broadcast('Done stack'))
+    await broadcast(json.dumps({'status': 'success', 'message': 'Done stack'}))
 
-@app.route('lights/in_out')
+@app.route('/lights/in_out')
 async def in_out(request):
-    asyncio.create_task(broadcast('Running in out'))
+    print('in_out')
+    await broadcast(json.dumps({'status': 'info', 'message': 'Running in out'}))
     await m.in_out()
-    asyncio.create_task(broadcast('Done in out'))
+    await broadcast(json.dumps({'status': 'success', 'message': 'Done in out'}))
 
 if __name__ == '__main__':
     app.run()

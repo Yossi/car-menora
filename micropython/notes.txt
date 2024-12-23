@@ -7,3 +7,10 @@ this might not matter since mip would not get the precompiled libs we need anywa
 
 
 the board as built has a bug. all the resistors are 220 but with the cheapo rgb leds the red channels should have a smaller resistor. 100 looks good. TODO: solder this up
+
+
+
+
+
+pip install --upgrade -r requirements.txt
+python setup.py -u

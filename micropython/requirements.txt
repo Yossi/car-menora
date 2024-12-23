@@ -1,0 +1,4 @@
+pip
+mpremote
+mpy-cross
+thonny

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RGBMenora Web Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+            max-width: 320px;
+            max-height: 454px;
+            overflow: auto;
+        }
+
+        input[type=number] {
+            width: 70%;
+            max-width: 200px;
+            padding: 10px;
+            font-size: 14px;
+            margin: 3px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 70%;
+            max-width: 200px;
+            min-width: 60px;
+            padding: 10px 5px;
+            font-size: 14px;
+            margin: 3px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #feedback {
+            width: 80%;
+            max-width: 200px;
+            padding: 5px;
+            font-size: 12px;
+            text-align: center;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        .inline-input-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-button-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-button-container .buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type=checkbox] {
+            width: 15px;
+            height: 15px;
+            margin: 5px;
+        }
+    </style>
+    <link id="favicon" rel="icon" type="image/png" href="">
+</head>
+
+<body>
+
+    <div class="table-button-container">
+        <table border="0" id="thetable">
+            <tr style="height:10px">
+                <th> </th>
+                <th bgcolor="red"> </th>
+                <th bgcolor="#00ff00"> </th>
+                <th bgcolor="blue"> </th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>s</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+            </tr>
+        </table>
+        <div class="buttons">
+            <button id="btnLoad" onClick="sendCommand('load')">Load</button>
+            <button id="btnGo" onClick="sendCommand('go')">Go</button>
+        </div>
+    </div>
+
+    <div class="inline-input-button">
+        <button id="btnWaveLight" onClick="sendCommand('waveLight')">LightWave</button>
+        <button id="btnWaveDark" onClick="sendCommand('waveDark')">DarkWave</button>
+        <button id="btnStack" onClick="sendCommand('stack')">Stack</button>
+        <button id="btnInOut" onClick="sendCommand('inOut')">InOut</button>
+    </div><br>
+    <div class="inline-input-button">
+        <input type="number" id="times" min="-1">
+        <button id="btnParty" onClick="sendCommand('party')">Party</button>
+    </div>
+    <div class="inline-input-button">
+        <input type="number" id="night" min="0" max="8">
+        <button id="btnLights" onClick="sendCommand('lights')">Lights</button>
+    </div>
+
+    <div id="feedback" style="background-color: yellow;">Waiting for server connection...</div>
+
+    <!-- <div id="viewportSize" style="position: fixed; bottom: 10px; right: 10px; background-color: #fff; border: 1px solid #ddd; padding: 5px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        Viewport: <span id="viewportWidth"></span> x <span id="viewportHeight"></span>
+    </div> -->
+
+    <script>
+        var ws;
+        var reconnectInterval = 5000; // 5 seconds
+
+        function connectWebSocket() {
+            ws = new WebSocket('ws://' + window.location.host + '/ws');
+
+            ws.onopen = function() {
+                console.log("WebSocket connection established");
+                updateFeedback("Connected to server.", "success");
+                toggleButtons(true);
+            };
+
+            ws.onmessage = function(event) {
+                try {
+                    var data = JSON.parse(event.data);
+                    console.log("Received from server:", data);
+
+                    if (data.status === "success") {
+                        updateFeedback(data.message, "success");
+                        if (data.bits) {
+                            updateCheckboxes(data.bits);
+                        }
+                    } else if (data.status === "info") {
+                        updateFeedback(data.message, "info");
+                    } else if (data.status === "error") {
+                        updateFeedback("Error: " + data.message, "error");
+                    } else {
+                        updateFeedback("Server says: " + JSON.stringify(data), "info");
+                    }
+                } catch (e) {
+                    console.error("Error parsing message:", event.data);
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.error("WebSocket error:", error);
+                updateFeedback("WebSocket error. See console for details.", "error");
+            };
+
+            ws.onclose = function() {
+                console.log("WebSocket connection closed");
+                updateFeedback("Disconnected from server. Attempting to reconnect...", "error");
+                toggleButtons(false);
+                setTimeout(connectWebSocket, reconnectInterval);
+            };
+        }
+
+        function sendCommand(command) {
+            var message;
+            if (command === 'party') {
+                var times = document.getElementById('times').value;
+                message = JSON.stringify({ command: command, times: times });
+            } else if (command === 'lights') {
+                var night = document.getElementById('night').value;
+                message = JSON.stringify({ command: command, night: night });
+            } else if (command === 'go') {
+                var checkboxes = document.querySelectorAll("input[type=checkbox]");
+                var values = Array.prototype.map.call(checkboxes, function(cb) {
+                    return cb.checked ? '1' : '0';
+                }).join('');
+                message = JSON.stringify({ command: command, bits: values });
+            } else {
+                message = JSON.stringify({ command: command });
+            }
+            console.log("Sending message:", message);
+            ws.send(message);
+
+            updateFeedback('Sending command: ' + command, "info");
+        }
+
+        function updateCheckboxes(bits) {
+            var checkboxes = document.querySelectorAll("input[type=checkbox]");
+            bits.split('').forEach(function(bit, index) {
+                checkboxes[index].checked = bit === '1';
+                var row = checkboxes[index].parentElement.parentElement;
+                updateColor(row);
+                generateFavicon();
+            });
+        }
+
+        function toggleButtons(enable) {
+            var buttons = document.querySelectorAll('button');
+            Array.prototype.forEach.call(buttons, function(button) {
+                button.disabled = !enable;
+            });
+        }
+
+        function updateFeedback(message, status) {
+            var feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.innerText = message;
+            if (status === "success") {
+                feedbackDiv.style.backgroundColor = "rgb(0, 255, 0)";
+            } else if (status === "error") {
+                feedbackDiv.style.backgroundColor = "red";
+            } else {
+                feedbackDiv.style.backgroundColor = "yellow";
+                feedbackDiv.innerText += '...';
+            }
+        }
+
+        function updateColor(row) {
+            var cells = row.querySelectorAll("td");
+
+            var red = cells[1].querySelector("input[type=checkbox]").checked ? 255 : 0;
+            var green = cells[2].querySelector("input[type=checkbox]").checked ? 255 : 0;
+            var blue = cells[3].querySelector("input[type=checkbox]").checked ? 255 : 0;
+
+            cells[1].style.backgroundColor = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+            cells[2].style.backgroundColor = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+            cells[3].style.backgroundColor = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+        }
+
+        var checkboxes = document.querySelectorAll("input[type=checkbox]");
+        Array.prototype.forEach.call(checkboxes, function(checkbox) {
+            checkbox.addEventListener("click", function() {
+                var row = checkbox.parentElement.parentElement;
+                updateColor(row);
+            });
+
+            var row = checkbox.parentElement.parentElement;
+            updateColor(row);
+        });
+
+        function generateFavicon() {
+            var canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            var ctx = canvas.getContext('2d');
+
+            var checkboxes = document.querySelectorAll("input[type=checkbox]");
+            var colors = [];
+            Array.prototype.forEach.call(checkboxes, function(checkbox, index) {
+                var row = checkbox.parentElement.parentElement;
+                var red = row.cells[1].querySelector("input[type=checkbox]").checked ? 255 : 0;
+                var green = row.cells[2].querySelector("input[type=checkbox]").checked ? 255 : 0;
+                var blue = row.cells[3].querySelector("input[type=checkbox]").checked ? 255 : 0;
+                if (index % 3 === 0) {
+                    colors.push([]);
+                    colors[colors.length - 1].push('rgb(' + red + ', ' + green + ', ' + blue + ')');
+                }
+            });
+
+            var positions = [
+                [0, 0], [5, 0], [10, 0],
+                [0, 5], [5, 5], [10, 5],
+                [0, 10], [5, 10], [10, 10]
+            ];
+
+            colors.reduce(function(acc, val) {
+                return acc.concat(val);
+            }, []).forEach(function(color, index) {
+                ctx.fillStyle = color;
+                ctx.fillRect(positions[index][0], positions[index][1], 5, 5);
+            });
+
+            var favicon = document.getElementById('favicon');
+            favicon.href = canvas.toDataURL('image/png');
+        }
+
+        Array.prototype.forEach.call(checkboxes, function(checkbox) {
+            checkbox.addEventListener('click', generateFavicon);
+        });
+
+        generateFavicon();
+
+        toggleButtons(false);
+
+        connectWebSocket();
+
+        // function updateViewportSize() {
+        //     document.getElementById('viewportWidth').innerText = window.innerWidth;
+        //     document.getElementById('viewportHeight').innerText = window.innerHeight;
+        // }
+
+        // window.addEventListener('resize', updateViewportSize);
+        // updateViewportSize();
+    </script>
+
+</body>
+
+</html>
