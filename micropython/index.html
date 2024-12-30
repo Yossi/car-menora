@@ -190,7 +190,7 @@
 
     <script>
         var ws;
-        var reconnectInterval = 5000; // 5 seconds
+        var reconnectInterval = 1000; // 1 second
 
         function connectWebSocket() {
             ws = new WebSocket('ws://' + window.location.host + '/ws');
