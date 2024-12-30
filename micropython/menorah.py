@@ -29,7 +29,7 @@ class Menorah(object):
         off = [0] * (9-n)
         self.lights = on + off
         self.lights[4] = 1
-        print(self.lights)
+        # print(self.lights)
         self.display_lights()
 
     async def stack(self):
@@ -42,6 +42,8 @@ class Menorah(object):
                 sleep(.1)
                 leds[y].off()
             leds[9-x-1].on()
+        sleep(.1)
+        self.display_lights()
 
     async def party_time(self, times=1, broadcast=None):
         def move(x):
