@@ -99,6 +99,9 @@
 <body>
 
     <div class="table-button-container">
+        <div class="buttons">
+            <button id="btnLoad" onClick="sendCommand('load')">Get</button>
+        </div>
         <table border="0" id="thetable">
             <tr style="height:10px">
                 <th> </th>
@@ -162,8 +165,7 @@
             </tr>
         </table>
         <div class="buttons">
-            <button id="btnLoad" onClick="sendCommand('load')">Load</button>
-            <button id="btnGo" onClick="sendCommand('go')">Go</button>
+            <button id="btnGo" onClick="sendCommand('go')">Set</button>
         </div>
     </div>
 
@@ -174,7 +176,7 @@
         <button id="btnInOut" onClick="sendCommand('inOut')">InOut</button>
     </div><br>
     <div class="inline-input-button">
-        <input type="number" id="times" min="-1">
+        <input type="number" id="times" min="-1" max="100">
         <button id="btnParty" onClick="sendCommand('party')">Party</button>
     </div>
     <div class="inline-input-button">
