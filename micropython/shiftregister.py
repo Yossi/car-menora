@@ -6,7 +6,7 @@ latch_pin = DigitalOutputDevice(4)
 
 class Register(object):
     def __init__(self):
-        self.load('1' * 27)
+        #self.load('1' * 27)
         rainbow = '100100110010111011001101101'
         self.load(rainbow)
 

@@ -101,7 +101,7 @@ async def party(request, times=1):
 async def stack(request):
     print('stack')
     await broadcast(json.dumps({'status': 'info', 'message': 'Running stack'}))
-    await m.stack()
+    await m.stack2()
     await broadcast(json.dumps({'status': 'success', 'message': 'Done stack'}))
 
 @app.route('/lights/in_out')
