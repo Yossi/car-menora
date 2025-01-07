@@ -19,6 +19,9 @@ async def websocket(request, ws):
     try:
         while True:
             message = await ws.receive()
+            if message == 'ping':
+                await ws.send('pong')
+                continue
             print(f'WebSocket message received: {message}')
             data = json.loads(message)
             command = data.get('command')

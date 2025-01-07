@@ -192,7 +192,8 @@
 
     <script>
         var ws;
-        var reconnectInterval = 1000; // 1 second
+        var reconnectInterval = 500; // half second
+        var pingInterval = 30000; // 30 seconds
 
         function connectWebSocket() {
             ws = new WebSocket('ws://' + window.location.host + '/ws');
@@ -201,6 +202,7 @@
                 console.log("WebSocket connection established");
                 updateFeedback("Connected to server.", "success");
                 toggleButtons(true);
+                startPing();
             };
 
             ws.onmessage = function(event) {
@@ -232,10 +234,18 @@
 
             ws.onclose = function() {
                 console.log("WebSocket connection closed");
-                updateFeedback("Disconnected from server. Attempting to reconnect...", "error");
+                updateFeedback("Disconnected. Reconnecting...", "error");
                 toggleButtons(false);
                 setTimeout(connectWebSocket, reconnectInterval);
             };
+        }
+
+        function startPing() {
+            setInterval(function() {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send('ping');
+                }
+            }, pingInterval);
         }
 
         function sendCommand(command) {
