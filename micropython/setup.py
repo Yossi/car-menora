@@ -66,7 +66,9 @@ if __name__ == '__main__':
 
     upload_files()
 
-    command = "run main.py"
-    print(f'running {command}')
-    output = run_mpremote_command(command)
-    print(output)
+    # command = "run main.py"
+    # print(f'running {command}')
+    # output = run_mpremote_command(command)
+    # print(output)
+
+# python setup.py -i; mpremote run main.py
