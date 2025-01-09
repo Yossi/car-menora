@@ -2,3 +2,4 @@ pip
 mpremote
 mpy-cross
 thonny
+requests
